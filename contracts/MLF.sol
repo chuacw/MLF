@@ -144,7 +144,7 @@ contract MLF is Initializable {
     // Called by the borrower
     // Ensures that the borrower has an outstanding loan.
     // Amount repaid is in msg.value
-    function payLoan() public payable validBorrower {
+    function payLoan() public payable {
         LoanInfo storage localLoanInfo = loanInfo[msg.sender];
         localLoanInfo.repayAmount = localLoanInfo.repayAmount.add(msg.value);
         emit Repaid(msg.sender, msg.value);
