@@ -25,6 +25,7 @@ contract MLF is Initializable {
         uint256 dateWithdrawn;
         address approvingOfficer;
         uint256 borrowAmount;
+        uint256 repayAmount;
     }
     
     address[3] public owners;
@@ -74,7 +75,7 @@ contract MLF is Initializable {
     }
 
     modifier sufficientBalance() {
-        require(loanInfo[msg.sender].borrowAmount <= getBalance(), 
+        require(loanInfo[msg.sender].borrowAmount > 0, 
           "Loan amount is larger than available balance!");
         _;
     }
@@ -95,9 +96,10 @@ contract MLF is Initializable {
     // Checks that the loan has been approved.
     // Checks that there is sufficient balance.
     function withdraw() public onlyApproved sufficientBalance validOwners {
-        LoanInfo storage loan = loanInfo[msg.sender];
-        uint256 loanAmount = loan.borrowAmount;
-        loan.dateWithdrawn = block.timestamp;
+        LoanInfo storage localLoanInfo = loanInfo[msg.sender];
+        uint256 loanAmount = localLoanInfo.borrowAmount;
+        localLoanInfo.borrowAmount = localLoanInfo.borrowAmount.sub(loanAmount);
+        localLoanInfo.dateWithdrawn = block.timestamp;
         msg.sender.transfer(loanAmount);
         emit Withdrawn(msg.sender, loanAmount);
     }
@@ -144,7 +146,7 @@ contract MLF is Initializable {
     // Amount repaid is in msg.value
     function payLoan() public payable validBorrower {
         LoanInfo storage localLoanInfo = loanInfo[msg.sender];
-        localLoanInfo.borrowAmount = localLoanInfo.borrowAmount.sub(msg.value);
+        localLoanInfo.repayAmount = localLoanInfo.repayAmount.add(msg.value);
         emit Repaid(msg.sender, msg.value);
     }
 
