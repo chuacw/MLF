@@ -35,14 +35,6 @@ class LoanConfirmationPage extends Component {
       currency: "ETH"
     }
     this.applyLoan = this.applyLoan.bind(this);
-    // call apply Loan
-    setTimeout(
-      function () {
-        this.applyLoan();
-      }
-        .bind(this),
-      500
-    );
   }
 
   async applyLoan() {
@@ -84,6 +76,15 @@ class LoanConfirmationPage extends Component {
   componentDidMount() {
     document.title = "Loan confirmation"
     // apply loan?
+    // call apply Loan
+    setTimeout(
+      function () {
+        this.applyLoan();
+      }
+        .bind(this),
+      500
+    );
+    
   }
 
   render = () => {
