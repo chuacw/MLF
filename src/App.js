@@ -20,8 +20,8 @@ import {
 import Web3 from 'web3';
 import EthereumProvider from './EthereumProvider';
 import AppContext from './AppContext';
-class App extends Component {
 
+class App extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     if (this.state == null) {
@@ -83,51 +83,20 @@ class App extends Component {
     }
   }
 
-  async loadBlockchainData() {
-    // Modern DApp Browsers
-    let lweb3;
-    if (window.ethereum) {
-      lweb3 = new Web3(window.ethereum);
-      try {
-        await window.ethereum.enable();
-      } catch (e) {
-        // User has denied account access to DApp...
-      }
-    }
-    // Legacy DApp Browsers
-    else if (window.web3) {
-      lweb3 = new Web3(window.web3.currentProvider);
-    }
-    // Non-DApp Browsers
-    else {
-      alert('You have to install MetaMask!');
-      return;
-    }
-    const web3 = lweb3;
-    if ((typeof web3 != "undefined") && (this.state.account === "")) {
-      try {
-        const accounts = await this.requestAccounts()
-        console.log("web3.eth.getAccounts")
-        if (typeof accounts != "undefined") {
-          this.setState({ account: accounts[0], accounts: accounts })
-        }
-      } catch (e) {
-        console.log(e)
-      }
-    }
-  }
-
   fnConnected(connectInfo) {
     console.log(connectInfo)
   }
+
   fnDisconnected(error) {
     console.log(error)
     this.setState({ account: "", accounts: null })
     this.checkAccountAvailable(this.state.events)
   }
+
   fnChainChanged(chainId) {
     console.log(chainId)
   }
+
   fnAccountsChanged(accounts) {
     console.log("accounts changed!")
     if (accounts.length > 0) {
@@ -153,38 +122,33 @@ class App extends Component {
     this.fnChainChanged = this.fnChainChanged.bind(this)
     this.fnConnected = this.fnConnected.bind(this)
     this.fnDisconnected = this.fnDisconnected.bind(this)
-    this.loadBlockchainData = this.loadBlockchainData.bind(this)
     this.requestAccounts = this.requestAccounts.bind(this)
     this.timer = null
   }
 
-
   render() {
     return (
       <React.Fragment>
-        
-          <NavBar />
-          <Header />
-          <Router>
-            <Switch>
-              <Route exact path='/' component={Page} />
-              <Route exact path='/ApprovalPage' component={ApprovalPage} />
-              <Route exact path='/LoanPage' render={props => <LoanPage account={this.state.account} />} />
-              <Route exact path='/LoanConfirmationPage' component={LoanConfirmationPage} />
-              <Route exact path='/WithdrawPage' render={props => <WithdrawPage account={this.state.account} />} />
-              <Route exact path='/WithdrawnConfirmationPage' component={WithdrawnConfirmationPage} />
-              <Route exact path='/SetAdminPage' component={SetAdminPage} />
-            </Switch>
-          </Router>
-          <Footer />
-          <div className="container">
-            <p>Your account: {this.state.account === "" ? "Not available" : this.state.account}</p>
-          </div>
-        
+        <NavBar />
+        <Header />
+        <Router>
+          <Switch>
+            <Route exact path='/' component={Page} />
+            <Route exact path='/ApprovalPage' component={ApprovalPage} />
+            <Route exact path='/LoanPage' render={props => <LoanPage account={this.state.account} />} />
+            <Route exact path='/LoanConfirmationPage' component={LoanConfirmationPage} />
+            <Route exact path='/WithdrawPage' render={props => <WithdrawPage account={this.state.account} />} />
+            <Route exact path='/WithdrawnConfirmationPage' component={WithdrawnConfirmationPage} />
+            <Route exact path='/SetAdminPage' component={SetAdminPage} />
+          </Switch>
+        </Router>
+        <Footer />
+        <div className="container">
+          <p>Your account: {this.state.account === "" ? "Not available" : this.state.account}</p>
+        </div>
       </React.Fragment>
     );
   }
 }
-
 
 export default App;
